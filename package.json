@@ -1,0 +1,23 @@
+{
+  "name": "resume-parser",
+  "version": "1.0.0",
+  "description": "AI-powered resume parser that extracts data from PDF, DOC, and DOCX files",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "setup": "node setup.js",
+    "install-deps": "npm install",
+    "test-extraction": "node -e \"const { extractTextFromFile } = require('./index.js'); extractTextFromFile('./resumes/Lauren-Fishbein-2.pdf').then(text => console.log('Text extracted successfully, length:', text.length)).catch(err => console.error('Error:', err.message));\""
+  },
+  "dependencies": {
+    "@types/cli-progress": "^3.11.6",
+    "@types/json2csv": "^5.0.7",
+    "cli-progress": "^3.12.0",
+    "dotenv": "^16.5.0",
+    "json2csv": "^6.0.0-alpha.2",
+    "openai": "^4.103.0",
+    "pdf-parse": "^1.1.1",
+    "mammoth": "^1.6.0",
+    "textract": "^2.5.0"
+  }
+}
