@@ -5,7 +5,7 @@ A powerful Node.js application that extracts structured data from resumes using 
 ## Features
 
 ✨ **Multi-format Support**: Parses PDF, DOC, and DOCX files  
-🤖 **AI-Powered**: Uses OpenAI GPT-4 for intelligent data extraction  
+🤖 **AI-Powered**: Uses OpenRouter to access various LLMs (default: `deepseek/deepseek-chat-v3-0324`) for intelligent data extraction  
 ⚡ **Batch Processing**: Processes 10-20 files simultaneously  
 🔄 **Retry Logic**: Automatic retries for failed requests  
 📊 **CSV Export**: Exports results to CSV format  
@@ -32,25 +32,28 @@ The parser extracts the following information from each resume:
    npm install
    ```
 
-3. **Set up your API key**:
+3. **Set up your environment and API key**:
+   Run the interactive setup script:
 
-   **Option A: Environment Variables**
-   Create a `.env` file in the root directory:
+   ```bash
+   npm run setup
+   ```
+
+   This script will help you create a `.env` file and input your OpenRouter API Key.
+
+   Alternatively, you can manually create a `.env` file in the root directory with the following content:
 
    ```env
    OPENROUTER_API_KEY=your_openrouter_api_key_here
    BATCH_SIZE=10
    MAX_RETRIES=3
    DELAY_BETWEEN_BATCHES=2000
+   # Add other configurations as needed (see Configuration section)
    ```
-
-   **Option B: Direct Configuration**
-   Edit the `CONFIG` object in `index.js` and replace `"your_api_key_here"` with your actual API key.
 
 4. **Get an OpenRouter API Key**:
    - Visit [OpenRouter.ai](https://openrouter.ai/)
-   - Sign up and get your API key
-   - The service provides access to GPT-4 and other models
+   - Sign up and get your API key. This key provides access to models like DeepSeek, GPT-4o, and others.
 
 ## Usage
 
@@ -67,7 +70,16 @@ The parser extracts the following information from each resume:
    node index.js
    ```
 
-3. **View results**:
+3. **Test single file extraction** (optional):
+   If you want to test text extraction for a specific file before running the full parser, you can use:
+
+   ```bash
+   npm run test-extraction
+   ```
+
+   Make sure the file path in `package.json` under `scripts.test-extraction` points to an existing resume file in your `resumes` directory.
+
+4. **View results**:
    - Progress will be shown in real-time
    - Results saved to `extracted_data.csv`
    - Summary report displayed at completion
@@ -93,17 +105,21 @@ To disable file organization, set `ORGANIZE_FILES=false` in your `.env` file.
 
 You can customize the processing behavior by setting these environment variables:
 
-| Variable                | Default              | Description                                |
-| ----------------------- | -------------------- | ------------------------------------------ |
-| `BATCH_SIZE`            | 10                   | Number of files to process simultaneously  |
-| `MAX_RETRIES`           | 3                    | Maximum retry attempts for failed requests |
-| `DELAY_BETWEEN_BATCHES` | 2000                 | Delay between batches (milliseconds)       |
-| `RESUME_DIR`            | ./resumes            | Directory containing resume files          |
-| `OUTPUT_CSV`            | ./extracted_data.csv | Output CSV file path                       |
-| `SUCCESS_DIR`           | ./resumes/success    | Directory for successfully processed files |
-| `FAILED_DIR`            | ./resumes/failed     | Directory for failed files                 |
-| `ORGANIZE_FILES`        | true                 | Enable/disable automatic file organization |
-| `AI_MODEL`              | openai/gpt-4o        | AI model to use                            |
+| Variable                | Default                          | Description                                                                  |
+| ----------------------- | -------------------------------- | ---------------------------------------------------------------------------- |
+| `OPENROUTER_API_KEY`    | `your_openrouter_api_key_here`   | Your OpenRouter API key.                                                     |
+| `BATCH_SIZE`            | 100                              | Number of files to process simultaneously.                                   |
+| `MAX_RETRIES`           | 3                                | Maximum retry attempts for failed AI requests.                               |
+| `DELAY_BETWEEN_BATCHES` | 2000                             | Delay between processing batches (milliseconds).                             |
+| `RESUME_DIR`            | `./resumes`                      | Directory containing resume files.                                           |
+| `OUTPUT_CSV`            | `./extracted_data.csv`           | Output CSV file path.                                                        |
+| `SUCCESS_DIR`           | `./resumes/success`              | Directory for successfully processed files.                                  |
+| `FAILED_DIR`            | `./resumes/failed`               | Directory for failed files.                                                  |
+| `ORGANIZE_FILES`        | `true`                           | Enable/disable automatic file organization (`true` or `false`).              |
+| `AI_MODEL`              | `deepseek/deepseek-chat-v3-0324` | AI model to use via OpenRouter (e.g., `openai/gpt-4o`, `google/gemini-pro`). |
+| `AI_BASE_URL`           | `https://openrouter.ai/api/v1`   | Base URL for the AI API provider.                                            |
+
+**Note**: `SUPPORTED_EXTENSIONS` (internally `['.pdf', '.doc', '.docx']`) are hardcoded in `index.js` and not configurable via `.env`.
 
 ## Example Output
 
@@ -121,8 +137,9 @@ fileName,name,email,phone,address
 
 **"Please set your OPENROUTER_API_KEY"**
 
-- Create a `.env` file with your API key
-- Or set the environment variable: `export OPENROUTER_API_KEY=your_key`
+- Run `npm run setup` to create/update your `.env` file.
+- Or ensure your `.env` file exists in the root directory and contains your `OPENROUTER_API_KEY`.
+- Or set the environment variable directly in your terminal (less common for this app): `export OPENROUTER_API_KEY=your_key` (Linux/macOS) or `set OPENROUTER_API_KEY=your_key` (Windows).
 
 **"No resume files found"**
 
@@ -155,6 +172,8 @@ fileName,name,email,phone,address
 - `openai`: AI processing
 - `json2csv`: CSV generation
 - `cli-progress`: Progress tracking
+- `dotenv`: Loads environment variables from `.env` file
+- `openai`: OpenAI Node.js library (used for OpenRouter compatibility)
 
 ### Processing Flow
 
@@ -165,10 +184,6 @@ fileName,name,email,phone,address
 5. **Result Validation**: Ensures proper JSON format
 6. **CSV Export**: Saves results to spreadsheet
 
-## License
-
-MIT License - feel free to use and modify as needed.
-
 ## Support
 
 For issues or questions:
@@ -176,3 +191,5 @@ For issues or questions:
 1. Check the troubleshooting section above
 2. Verify your API key and file formats
 3. Review the console output for specific error messages
+
+Made with ❤️ by [Raju](https://x.com/rajubeparybd)
